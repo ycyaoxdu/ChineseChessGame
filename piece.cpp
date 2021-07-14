@@ -38,3 +38,8 @@ void Piece::init(int id){
         this->_type = this->pos[id -16].t;
     }
 }
+
+void Piece::rotate(){
+    this->_row = 9-this->_row;
+    this->_col = 8-this->_col;
+}

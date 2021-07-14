@@ -5,16 +5,25 @@
 
 Board::Board(QWidget *parent) : QWidget(parent)
 {
-    init();
+    init(true);
 }
 
 /*
 **
 */
-void Board::init(){
+void Board::init(bool bottomRed){
     for(int i = 0 ; i < 32 ; ++i){
         _p[i].init(i);
     }
+
+    if(bottomRed){
+        for(int i = 0 ; i < 32 ; ++i){
+            _p[i].rotate();
+        }
+    }
+
+    _bottomSide = bottomRed;
+
     update();
 }
 
@@ -163,6 +172,87 @@ int Board::getPieceCountAtLine(int row1, int col1, int row2, int col2){
 /*
 **
 */
+void Board::drawInitPosition(QPainter &p, int row, int col){
+      QPoint pt = transform(col, row);
+      QPoint off = QPoint(_r/6, _r/6);
+      int len = _r/3;
+
+      QPoint ptStart;
+      QPoint ptEnd;
+
+      if(col != 0)
+      {
+          /* 左上角 */
+          ptStart = QPoint(pt.x() - off.x(), pt.y() - off.y());
+          ptEnd = ptStart + QPoint(-len, 0);
+          p.drawLine(ptStart, ptEnd);
+          ptEnd = ptStart + QPoint(0, -len);
+          p.drawLine(ptStart, ptEnd);
+
+          /* 左下角 */
+          ptStart = QPoint(pt.x() - off.x(), pt.y() + off.y());
+          ptEnd = ptStart + QPoint(-len, 0);
+          p.drawLine(ptStart, ptEnd);
+          ptEnd = ptStart + QPoint(0, +len);
+          p.drawLine(ptStart, ptEnd);
+      }
+      if(col != 8)
+          {
+              /* 右下角 */
+              ptStart = QPoint(pt.x() + off.x(), pt.y() + off.y());
+              ptEnd = ptStart + QPoint(+len, 0);
+              p.drawLine(ptStart, ptEnd);
+              ptEnd = ptStart + QPoint(0, +len);
+              p.drawLine(ptStart, ptEnd);
+
+              /* 右上角 */
+              ptStart = QPoint(pt.x() + off.x(), pt.y() - off.y());
+              ptEnd = ptStart + QPoint(+len, 0);
+              p.drawLine(ptStart, ptEnd);
+              ptEnd = ptStart + QPoint(0, -len);
+              p.drawLine(ptStart, ptEnd);
+          }
+}
+
+void Board::drawBoard(QPainter &p){
+    //横线
+    for(int i = 0 ; i <= 9 ; ++i){
+        p.drawLine(transform(0, i), transform(8, i));
+    }
+    //竖线
+    for(int j = 0 ; j <= 8 ; ++j){
+        if(j == 0 || j == 8){
+            p.drawLine(transform(j, 4), transform(j, 5));
+        }
+        p.drawLine(transform(j, 0), transform(j, 4));
+        p.drawLine(transform(j, 5), transform(j, 9));
+    }
+    //宫格
+    p.drawLine(transform(3, 0), transform(5, 2));
+    p.drawLine(transform(3, 2), transform(5, 0));
+    p.drawLine(transform(3, 7), transform(5, 9));
+    p.drawLine(transform(3, 9), transform(5, 7));
+
+    //炮、卒位
+    drawInitPosition(p, 3, 0);
+    drawInitPosition(p, 3, 2);
+    drawInitPosition(p, 3, 4);
+    drawInitPosition(p, 3, 6);
+    drawInitPosition(p, 3, 8);
+
+    drawInitPosition(p, 6, 0);
+    drawInitPosition(p, 6, 2);
+    drawInitPosition(p, 6, 4);
+    drawInitPosition(p, 6, 6);
+    drawInitPosition(p, 6, 8);
+
+    drawInitPosition(p, 2, 1);
+    drawInitPosition(p, 2, 7);
+
+    drawInitPosition(p, 7, 1);
+    drawInitPosition(p, 7, 7);
+}
+
 void Board::drawPiece(QPainter &p, int id){
     /*
         画棋子：圆、底色、字、字色
@@ -203,23 +293,8 @@ void Board::paintEvent(QPaintEvent *){
 
     QPainter p(this);
 
-    //横线
-    for(int i = 0 ; i <= 9 ; ++i){
-        p.drawLine(transform(0, i), transform(8, i));
-    }
-    //竖线
-    for(int j = 0 ; j <= 8 ; ++j){
-        if(j == 0 || j == 8){
-            p.drawLine(transform(j, 4), transform(j, 5));
-        }
-        p.drawLine(transform(j, 0), transform(j, 4));
-        p.drawLine(transform(j, 5), transform(j, 9));
-    }
-    //宫格
-    p.drawLine(transform(3, 0), transform(5, 2));
-    p.drawLine(transform(3, 2), transform(5, 0));
-    p.drawLine(transform(3, 7), transform(5, 9));
-    p.drawLine(transform(3, 9), transform(5, 7));
+    //
+    drawBoard(p);
 
     //
     for(int i = 0 ; i< 32 ; ++i){
@@ -301,14 +376,16 @@ void Board::trySelect(int id){
     update();
 }
 
-
-//
+//杀棋
+//将棋子状态置为死
 void Board::killPiece(int id){
     if(id == -1){
         return;
     }
     _p[id]._dead = true;
 }
+
+
 
 
 
@@ -495,7 +572,8 @@ bool Board::canMove(int sel, int kill, int row, int col){
 
 //移动
 void Board::movePiece(int sel, int kill, int row, int col){
-
+    //计步
+    saveStep(sel, kill, row, col, _steps);
     //被杀棋子不再显示
     killPiece(kill);
     //执行移动
@@ -510,3 +588,52 @@ void Board::doMovePiece(int sel, int row, int col){
     //控制交换走棋
     _bRedTurn = !_bRedTurn;
 }
+
+
+//计步
+void Board::saveStep(int moveid, int killid, int row, int col, QVector<Step *> &steps){
+    Step* st = new Step;
+
+    st->_colFrom = _p[moveid]._col;
+    st->_rowFrom = _p[moveid]._row;
+    st->_colTo = col;
+    st->_rowTo = row;
+
+    st->_moveid = moveid;
+    st->_killid = killid;
+    st->_red = _p[moveid]._red;
+    st->_type = _p[moveid]._type;
+
+    steps.append(st);
+}
+
+//将棋子复活
+void Board::relivePiece(int id){
+    if(id == -1){
+        return;
+    }
+    _p[id]._dead = false;
+}
+
+//
+void Board::doStepBack(Step *step){
+    relivePiece(step->_killid);
+    movePiece(step->_moveid, -1 ,step->_rowFrom, step->_colFrom);
+}
+
+//
+void Board::stepBack(){
+    if(this->_steps.size() == 0){
+        return;
+    }
+
+    Step* st = this->_steps.last();
+    _steps.removeLast();
+    doStepBack(st);
+
+    update();
+    delete st;
+
+}
+
+//

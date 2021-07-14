@@ -6,8 +6,10 @@
 #include <QRect>
 #include <QBrush>
 #include <QMouseEvent>
+#include <QVector>
 
 #include "piece.h"
+#include "step.h"
 
 class Board : public QWidget
 {
@@ -16,8 +18,21 @@ class Board : public QWidget
 public:
     explicit Board(QWidget *parent = nullptr);
 
+    //board varaibles
+    int _d = 40;
+    int _r = _d/2;
+
+    //game data
+    Piece _p[32];
+    bool _bRedTurn = true;
+    bool _bottomSide;
+    int _selectid = -1;
+    int killid = -1;
+    QVector<Step*> _steps;
+
+
     //init
-    void init();
+    void init(bool bottomRed);
 
     //transform
     QPoint transform(int row, int col);
@@ -42,6 +57,8 @@ public:
     //draw
     virtual void paintEvent(QPaintEvent *);
     void drawPiece(QPainter& p, int id);
+    void drawInitPosition(QPainter& p, int row, int col);
+    void drawBoard(QPainter& p);
 
 
     //select & move
@@ -64,16 +81,11 @@ public:
     void doMovePiece(int sel, int row, int col);
     void killPiece(int id);
 
-    //board varaibles
-    int _d = 40;
-    int _r = _d/2;
-
-    //game data
-    Piece _p[32];
-    bool _bRedTurn = true;
-    bool _bottomSide;
-    int _selectid = -1;
-    int killid = -1;
+    //
+    void relivePiece(int id);
+    void saveStep(int moveid, int killid, int row, int col, QVector<Step*> &steps);
+    void doStepBack(Step *step);
+    void stepBack();
 
 
 signals:

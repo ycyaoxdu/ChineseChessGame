@@ -11,9 +11,11 @@ CONFIG += c++11
 SOURCES += \
     board.cpp \
     main.cpp \
-    piece.cpp
+    piece.cpp \
+    step.cpp
 
 HEADERS += \
     board.h \
-    piece.h
+    piece.h \
+    step.h
 

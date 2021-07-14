@@ -50,6 +50,8 @@ public:
     QString name();
     void init(int id);
 
+    void rotate();
+
 };
 
 #endif // PIECE_H
