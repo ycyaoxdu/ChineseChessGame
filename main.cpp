@@ -1,6 +1,6 @@
 #include <QApplication>
 
-#include "board.h"
+#include "singlegame.h"
 
 
 int main(int argc, char *argv[])
@@ -8,8 +8,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 
-    Board b;
-    b.show();
+    SingleGame sg;
+    sg.show();
 
     return a.exec();
 }

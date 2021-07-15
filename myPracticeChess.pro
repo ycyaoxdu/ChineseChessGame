@@ -12,10 +12,12 @@ SOURCES += \
     board.cpp \
     main.cpp \
     piece.cpp \
+    singlegame.cpp \
     step.cpp
 
 HEADERS += \
     board.h \
     piece.h \
+    singlegame.h \
     step.h
 

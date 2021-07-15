@@ -438,7 +438,7 @@ bool Board::canMoveMA(int sel, int kill, int row, int col){
 }
 //
 bool Board::canMoveXIANG(int sel, int kill, int row, int col){
-    if(isBottomSide(sel)){
+    if(!isBottomSide(sel)){
         if(row < 5){
             return false;
         }
@@ -458,7 +458,7 @@ bool Board::canMoveSHI(int sel, int kill, int row, int col){
     if(col < 3 || col > 5){
         return false;
     }
-    if(isBottomSide(sel)){
+    if(!isBottomSide(sel)){
         if(row < 7){
             return false;
         }
@@ -479,7 +479,7 @@ bool Board::canMoveJIANG(int sel, int kill, int row, int col){
     if(col < 3 || col > 5){
         return false;
     }
-    if(isBottomSide(sel)){
+    if(!isBottomSide(sel)){
         if(row < 7){
             return false;
         }
@@ -586,7 +586,7 @@ void Board::doMovePiece(int sel, int row, int col){
     _p[sel]._col = col;
 
     //控制交换走棋
-    _bRedTurn = !_bRedTurn;
+    this->_bRedTurn = !this->_bRedTurn;
 }
 
 

@@ -65,7 +65,7 @@ public:
     virtual void mouseReleaseEvent(QMouseEvent *ev);
     void click(QPoint pt);
     bool getClickPos(QPoint p, int &row, int &col);
-    void select(int id, int row, int col);
+    virtual void select(int id, int row, int col);
     void trySelect(int id);
     void tryMove(int killId, int row, int col);
     bool canMove(int sel, int kill, int row, int col);
