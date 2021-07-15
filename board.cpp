@@ -3,6 +3,15 @@
 #include <QPainter>
 
 
+/*
+ *  未实现的功能：
+ *      1.  老将死亡游戏结束
+ *      2.  老将照面游戏结束
+ *      3.  将死直接结束
+ */
+
+
+
 Board::Board(QWidget *parent) : QWidget(parent)
 {
     init(true);

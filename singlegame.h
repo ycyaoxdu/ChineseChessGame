@@ -22,8 +22,8 @@ public:
     void unfakeMove(Step* step);
     int calcScore();
 
-    int getMinScore(int level);
-    int getMaxScore(int level);
+    int getMinScore(int level, int curMaxScore);
+    int getMaxScore(int level, int curMinScore);
 
     int _level;
 

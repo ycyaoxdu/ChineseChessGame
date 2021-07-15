@@ -101,7 +101,7 @@ int SingleGame::calcScore(){
 }
 
 //
-int SingleGame::getMinScore(int level){
+int SingleGame::getMinScore(int level, int curMaxScore){
     if(level == 0){
         return calcScore();
     }
@@ -116,19 +116,30 @@ int SingleGame::getMinScore(int level){
         steps.removeLast();
 
         fakeMove(s);
-        int score = getMaxScore(level-1);
+        int score = getMaxScore(level-1, minScore);
         unfakeMove(s);
+        delete s;
+
+        //剪枝
+        if(score <= curMaxScore){
+            while(steps.count()){
+                Step* step = steps.back();
+                steps.removeLast();
+                delete step;
+            }
+            return score;
+        }
+
 
         if(score < minScore){
            minScore = score ;
         }
-        delete s;
     }
     return minScore;
 }
 
 //
-int SingleGame::getMaxScore(int level){
+int SingleGame::getMaxScore(int level, int curMinScore){
     if(level == 0){
         return calcScore();
     }
@@ -142,13 +153,23 @@ int SingleGame::getMaxScore(int level){
         steps.removeLast();
 
         fakeMove(s);
-        int score = getMinScore(level-1);
+        int score = getMinScore(level-1, maxScore);
         unfakeMove(s);
+        delete s;
+
+        //剪枝
+        if(score >= curMinScore){
+            while(steps.count()){
+                Step* step = steps.back();
+                steps.removeLast();
+                delete step;
+            }
+            return score;
+        }
 
         if(score > maxScore){
            maxScore = score ;
         }
-        delete s;
 
     }
     return maxScore;
@@ -177,7 +198,7 @@ Step* SingleGame::getBestMove(){
         steps.removeLast();
 
         fakeMove(s);
-        int score = getMinScore(this->_level-1);
+        int score = getMinScore(this->_level-1, maxScore);
         unfakeMove(s);
 
         if(score > maxScore){
