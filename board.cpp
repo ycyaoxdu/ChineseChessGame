@@ -124,7 +124,7 @@ bool Board::banMAtui(int id, int row, int col, bool crosswise){
     if(crosswise){
         //横向
         int tmp = (_p[id]._col + col) / 2 ;
-        if(getPieceId(_p[id]._col, tmp) != -1){
+        if(getPieceId(_p[id]._row, tmp) != -1){
             return true;
         }
     } else {
@@ -524,7 +524,7 @@ bool Board::canMoveZU(int sel, int kill, int row, int col){
     }
     int row1 = _p[sel]._row;
 
-    if(isBottomSide(sel)){
+    if(!isBottomSide(sel)){
         if(row1 >= 5){
             //只能前进
             return (row - row1 < 0);

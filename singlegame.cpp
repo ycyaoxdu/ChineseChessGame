@@ -1,9 +1,6 @@
 #include "singlegame.h"
 
-SingleGame::SingleGame()
-{
-
-}
+#include <QTimer>
 
 //
 void SingleGame::select(int id, int row, int col){
@@ -16,19 +13,34 @@ void SingleGame::select(int id, int row, int col){
 
     //如果轮到黑棋，调用电脑走棋
     if(!this->_bRedTurn){
-        Step* tmp = getBestMove();
-        movePiece(tmp->_moveid, tmp->_killid, tmp->_rowTo, tmp->_colTo);
-        delete tmp;
-        update();
+        //等待0.1秒（刷新棋盘），在执行主机思考过程
+        /*启动0.1秒定时器，防止主线程阻塞过久*/
+        QTimer::singleShot(100, this, SLOT(computerMove()));
 
     }
 
 }
 
 //
+void SingleGame::computerMove(){
+    Step* tmp = getBestMove();
+    movePiece(tmp->_moveid, tmp->_killid, tmp->_rowTo, tmp->_colTo);
+    delete tmp;
+    update();
+}
+
+
+//
 void SingleGame::getAllPossibleMoves(QVector<Step *> &steps){
     //遍历
-    for(int i = 16 ; i < 32 ; ++i){
+    //可计算红或黑可走的步数
+    int min = 16, max = 32;
+    if(this->_bRedTurn){
+        min = 0;
+        max = 16;
+    }
+
+    for(int i = min ; i < max ; ++i){
         if(_p[i]._dead){
             continue;
         }
@@ -62,14 +74,12 @@ void SingleGame::unfakeMove(Step *step){
 }
 
 //评价局面分
-//仅实现了一步自走，很笨
 int SingleGame::calcScore(){
     /*
      *  车   马   象   士   将   炮   卒
-     *  10   8    4    4   999  7    3
      *
      */
-    static int chessScore[] = {10, 8, 8, 4, 999, 7, 3};
+    static int chessScore[] = {1000, 499, 100, 100, 15000, 501, 200};
 
     //  blackScore - redScore;
     int blackScore = 0, redScore = 0;
@@ -91,6 +101,62 @@ int SingleGame::calcScore(){
 }
 
 //
+int SingleGame::getMinScore(int level){
+    if(level == 0){
+        return calcScore();
+    }
+
+    //
+    QVector<Step*> steps;
+    getAllPossibleMoves(steps);
+
+    int minScore = 999999;
+    while(steps.count()){
+        Step* s = steps.back();
+        steps.removeLast();
+
+        fakeMove(s);
+        int score = getMaxScore(level-1);
+        unfakeMove(s);
+
+        if(score < minScore){
+           minScore = score ;
+        }
+        delete s;
+    }
+    return minScore;
+}
+
+//
+int SingleGame::getMaxScore(int level){
+    if(level == 0){
+        return calcScore();
+    }
+    //
+    QVector<Step*> steps;
+    getAllPossibleMoves(steps);
+
+    int maxScore = -999999;
+    while(steps.count()){
+        Step* s = steps.back();
+        steps.removeLast();
+
+        fakeMove(s);
+        int score = getMinScore(level-1);
+        unfakeMove(s);
+
+        if(score > maxScore){
+           maxScore = score ;
+        }
+        delete s;
+
+    }
+    return maxScore;
+}
+
+
+//两步智能：内层选出所有可能路径的最小值，外层在各路径的最小值里选最大的一个
+
 Step* SingleGame::getBestMove(){
 /*
 **  1.找出可以走的步
@@ -103,18 +169,24 @@ Step* SingleGame::getBestMove(){
     //1
     getAllPossibleMoves(steps);
     //2,3
-    int maxScore = -10000;
+    int maxScore = -999999;
+
     Step* ret = nullptr;
-    for(auto it = steps.begin() ; it != steps.end() ; ++it){
-        Step* s = *it;
+    while(steps.count()){
+        Step* s = steps.back();
+        steps.removeLast();
 
         fakeMove(s);
-        int score = calcScore();
+        int score = getMinScore(this->_level-1);
         unfakeMove(s);
 
         if(score > maxScore){
             maxScore = score;
+
+            if(ret) {delete ret;}
             ret = s;
+        } else {
+            delete s;
         }
     }
 

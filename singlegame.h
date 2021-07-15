@@ -3,12 +3,16 @@
 
 #include "board.h"
 
+
 class SingleGame : public Board
 {
+    Q_OBJECT
 public:
-    SingleGame();
+    SingleGame(){
+        _level = 3;
+    };
 
-    void select(int id, int row, int col);
+    virtual void select(int id, int row, int col);
 
     Step* getBestMove();
 
@@ -17,6 +21,15 @@ public:
     void fakeMove(Step* step);
     void unfakeMove(Step* step);
     int calcScore();
+
+    int getMinScore(int level);
+    int getMaxScore(int level);
+
+    int _level;
+
+public slots:
+    //槽函数
+    void computerMove();
 
 
 };
