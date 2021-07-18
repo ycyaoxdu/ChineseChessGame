@@ -14,6 +14,7 @@
 
 Board::Board(QWidget *parent) : QWidget(parent)
 {
+    setMinimumSize(_r*20+1, _r*22+1);
     init(true);
 }
 
@@ -74,10 +75,10 @@ QString Board::getName(int id){
 }
 
 QPoint Board::pieceCenter(int id){
-   //获取棋子中心点相对坐标
-   //要把相对坐标转换为绝对坐标
-   return transform(_p[id]._col, _p[id]._row);
-   //此处row,col交换位置才得到了正确的结果
+    //获取棋子中心点相对坐标
+    //要把相对坐标转换为绝对坐标
+    return transform(_p[id]._col, _p[id]._row);
+    //此处row,col交换位置才得到了正确的结果
 }
 
 
@@ -182,45 +183,45 @@ int Board::getPieceCountAtLine(int row1, int col1, int row2, int col2){
 **
 */
 void Board::drawInitPosition(QPainter &p, int row, int col){
-      QPoint pt = transform(col, row);
-      QPoint off = QPoint(_r/6, _r/6);
-      int len = _r/3;
+    QPoint pt = transform(col, row);
+    QPoint off = QPoint(_r/6, _r/6);
+    int len = _r/3;
 
-      QPoint ptStart;
-      QPoint ptEnd;
+    QPoint ptStart;
+    QPoint ptEnd;
 
-      if(col != 0)
-      {
-          /* 左上角 */
-          ptStart = QPoint(pt.x() - off.x(), pt.y() - off.y());
-          ptEnd = ptStart + QPoint(-len, 0);
-          p.drawLine(ptStart, ptEnd);
-          ptEnd = ptStart + QPoint(0, -len);
-          p.drawLine(ptStart, ptEnd);
+    if(col != 0)
+    {
+        /* 左上角 */
+        ptStart = QPoint(pt.x() - off.x(), pt.y() - off.y());
+        ptEnd = ptStart + QPoint(-len, 0);
+        p.drawLine(ptStart, ptEnd);
+        ptEnd = ptStart + QPoint(0, -len);
+        p.drawLine(ptStart, ptEnd);
 
-          /* 左下角 */
-          ptStart = QPoint(pt.x() - off.x(), pt.y() + off.y());
-          ptEnd = ptStart + QPoint(-len, 0);
-          p.drawLine(ptStart, ptEnd);
-          ptEnd = ptStart + QPoint(0, +len);
-          p.drawLine(ptStart, ptEnd);
-      }
-      if(col != 8)
-          {
-              /* 右下角 */
-              ptStart = QPoint(pt.x() + off.x(), pt.y() + off.y());
-              ptEnd = ptStart + QPoint(+len, 0);
-              p.drawLine(ptStart, ptEnd);
-              ptEnd = ptStart + QPoint(0, +len);
-              p.drawLine(ptStart, ptEnd);
+        /* 左下角 */
+        ptStart = QPoint(pt.x() - off.x(), pt.y() + off.y());
+        ptEnd = ptStart + QPoint(-len, 0);
+        p.drawLine(ptStart, ptEnd);
+        ptEnd = ptStart + QPoint(0, +len);
+        p.drawLine(ptStart, ptEnd);
+    }
+    if(col != 8)
+    {
+        /* 右下角 */
+        ptStart = QPoint(pt.x() + off.x(), pt.y() + off.y());
+        ptEnd = ptStart + QPoint(+len, 0);
+        p.drawLine(ptStart, ptEnd);
+        ptEnd = ptStart + QPoint(0, +len);
+        p.drawLine(ptStart, ptEnd);
 
-              /* 右上角 */
-              ptStart = QPoint(pt.x() + off.x(), pt.y() - off.y());
-              ptEnd = ptStart + QPoint(+len, 0);
-              p.drawLine(ptStart, ptEnd);
-              ptEnd = ptStart + QPoint(0, -len);
-              p.drawLine(ptStart, ptEnd);
-          }
+        /* 右上角 */
+        ptStart = QPoint(pt.x() + off.x(), pt.y() - off.y());
+        ptEnd = ptStart + QPoint(+len, 0);
+        p.drawLine(ptStart, ptEnd);
+        ptEnd = ptStart + QPoint(0, -len);
+        p.drawLine(ptStart, ptEnd);
+    }
 }
 
 void Board::drawBoard(QPainter &p){
@@ -345,7 +346,7 @@ bool Board::getClickPos(QPoint p, int &row, int &col){
     //依次遍历，找到棋子
     for(row = 0 ; row <= 9 ; ++row){
         for(col = 0 ; col <= 8 ; ++col){
-                                                //交换x，y
+            //交换x，y
             QPoint dist = transform(row, col) - QPoint{p.y(), p.x()};
             if(dist.x() * dist.x() + dist.y() * dist.y() < _r * _r){
                 return true;
@@ -560,9 +561,9 @@ bool Board::canMove(int sel, int kill, int row, int col){
     //走棋规则
     switch (_p[sel]._type) {
     case Piece::JU:
-       return canMoveJU(sel, kill, row, col);
+        return canMoveJU(sel, kill, row, col);
     case Piece::MA:
-       return canMoveMA(sel, kill, row, col);
+        return canMoveMA(sel, kill, row, col);
     case Piece::XIANG:
         return canMoveXIANG(sel, kill, row, col);
     case Piece::SHI:
@@ -646,3 +647,8 @@ void Board::stepBack(){
 }
 
 //
+void Board::slotBack(){
+    stepBack();
+}
+
+

@@ -44,7 +44,7 @@ public:
     {3, 6, ZU},
     {3, 8, ZU},
 
-    };
+};
 
     //
     QString name();

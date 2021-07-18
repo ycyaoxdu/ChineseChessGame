@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,13 +10,23 @@ CONFIG += c++11
 
 SOURCES += \
     board.cpp \
+    choosebar.cpp \
+    ctrlpanel.cpp \
     main.cpp \
+    mainwindow.cpp \
+    multigame.cpp \
+    netgame.cpp \
     piece.cpp \
     singlegame.cpp \
     step.cpp
 
 HEADERS += \
     board.h \
+    choosebar.h \
+    ctrlpanel.h \
+    mainwindow.h \
+    multigame.h \
+    netgame.h \
     piece.h \
     singlegame.h \
     step.h

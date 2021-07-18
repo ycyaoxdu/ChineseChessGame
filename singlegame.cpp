@@ -132,7 +132,7 @@ int SingleGame::getMinScore(int level, int curMaxScore){
 
 
         if(score < minScore){
-           minScore = score ;
+            minScore = score ;
         }
     }
     return minScore;
@@ -168,7 +168,7 @@ int SingleGame::getMaxScore(int level, int curMinScore){
         }
 
         if(score > maxScore){
-           maxScore = score ;
+            maxScore = score ;
         }
 
     }
@@ -179,7 +179,7 @@ int SingleGame::getMaxScore(int level, int curMinScore){
 //两步智能：内层选出所有可能路径的最小值，外层在各路径的最小值里选最大的一个
 
 Step* SingleGame::getBestMove(){
-/*
+    /*
 **  1.找出可以走的步
 **  2.尝试走
 **  3.评估结果

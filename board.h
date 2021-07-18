@@ -90,6 +90,8 @@ public:
 
 signals:
 
+public slots:
+    void slotBack();
 };
 
 #endif // BOARD_H
